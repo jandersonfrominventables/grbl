@@ -624,5 +624,6 @@
 
 // Paste default settings definitions here.
 
+#define ECHO_STEP_DIRECTION_ON_COOLANT
 
 #endif

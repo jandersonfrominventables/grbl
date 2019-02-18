@@ -99,6 +99,15 @@
   #define COOLANT_MIST_DDR   DDRC
   #define COOLANT_MIST_PORT  PORTC
   #define COOLANT_MIST_BIT   4  // Uno Analog Pin 4
+  
+  #ifdef ECHO_STEP_DIRECTION_ON_COOLANT
+    #define ECHO_STEP_PORT COOLANT_FLOOD_PORT
+    #define ECHO_STEP_PIN COOLANT_FLOOD_BIT
+    #define ECHO_STEP_MASK (1U<<ECHO_STEP_PIN)
+    #define ECHO_DIRECTION_PORT COOLANT_MIST_PORT
+    #define ECHO_DIRECTION_PIN COOLANT_MIST_BIT
+    #define ECHO_DIRECTION_MASK (1U<<ECHO_DIRECTION_PIN)
+  #endif
 
   // Define user-control controls (cycle start, reset, feed hold) input pins.
   // NOTE: All CONTROLs pins must be on the same port and not on a port with other input pins (limits).
