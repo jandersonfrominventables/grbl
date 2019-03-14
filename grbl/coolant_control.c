@@ -23,11 +23,18 @@
 
 void coolant_init()
 {
+#ifndef ECHO_STEP_DIRECTION_ON_COOLANT
   COOLANT_FLOOD_DDR |= (1 << COOLANT_FLOOD_BIT); // Configure as output pin
   #ifdef ENABLE_M7
     COOLANT_MIST_DDR |= (1 << COOLANT_MIST_BIT);
   #endif
   coolant_stop();
+#else
+  COOLANT_FLOOD_DDR |= (1 << COOLANT_FLOOD_BIT);
+  COOLANT_MIST_DDR |= (1 << COOLANT_MIST_BIT);
+  COOLANT_FLOOD_PORT |= (1 << COOLANT_FLOOD_BIT);
+  COOLANT_MIST_PORT |= (1 << COOLANT_MIST_BIT);
+#endif
 }
 
 
@@ -35,6 +42,7 @@ void coolant_init()
 uint8_t coolant_get_state()
 {
   uint8_t cl_state = COOLANT_STATE_DISABLE;
+#ifndef ECHO_STEP_DIRECTION_ON_COOLANT
   #ifdef INVERT_COOLANT_FLOOD_PIN
     if (bit_isfalse(COOLANT_FLOOD_PORT,(1 << COOLANT_FLOOD_BIT))) {
   #else
@@ -51,6 +59,7 @@ uint8_t coolant_get_state()
       cl_state |= COOLANT_STATE_MIST;
     }
   #endif
+#endif
   return(cl_state);
 }
 
@@ -59,6 +68,7 @@ uint8_t coolant_get_state()
 // an interrupt-level. No report flag set, but only called by routines that don't need it.
 void coolant_stop()
 {
+#ifndef ECHO_STEP_DIRECTION_ON_COOLANT
   #ifdef INVERT_COOLANT_FLOOD_PIN
     COOLANT_FLOOD_PORT |= (1 << COOLANT_FLOOD_BIT);
   #else
@@ -71,6 +81,7 @@ void coolant_stop()
       COOLANT_MIST_PORT &= ~(1 << COOLANT_MIST_BIT);
     #endif
   #endif
+#endif
 }
 
 
@@ -80,6 +91,7 @@ void coolant_stop()
 // parser program end, and g-code parser coolant_sync().
 void coolant_set_state(uint8_t mode)
 {
+#ifndef ECHO_STEP_DIRECTION_ON_COOLANT
   if (sys.abort) { return; } // Block during abort.  
   
 	if (mode & COOLANT_FLOOD_ENABLE) {
@@ -113,6 +125,7 @@ void coolant_set_state(uint8_t mode)
 	#endif
 	
   sys.report_ovr_counter = 0; // Set to report change immediately
+#endif
 }
 
 
@@ -120,7 +133,9 @@ void coolant_set_state(uint8_t mode)
 // if an abort or check-mode is active.
 void coolant_sync(uint8_t mode)
 {
+#ifndef ECHO_STEP_DIRECTION_ON_COOLANT
   if (sys.state == STATE_CHECK_MODE) { return; }
   protocol_buffer_synchronize(); // Ensure coolant turns on when specified in program.
   coolant_set_state(mode);
+#endif
 }

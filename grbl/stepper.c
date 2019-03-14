@@ -313,7 +313,7 @@ ISR(TIMER1_COMPA_vect)
   DIRECTION_PORT = (DIRECTION_PORT & ~DIRECTION_MASK) | (st.dir_outbits & DIRECTION_MASK);
   #ifdef ECHO_STEP_DIRECTION_ON_COOLANT
     ECHO_DIRECTION_PORT = (ECHO_DIRECTION_PORT & ~ECHO_DIRECTION_MASK) | 
-                          (((st.dir_outbits & X_DIRECTION_BIT) != 0U) << ECHO_DIRECTION_PIN);
+                          (((st.dir_outbits & 1<<X_DIRECTION_BIT) != 0U) << ECHO_DIRECTION_PIN);
   #endif
 
   // Then pulse the stepping pins
@@ -323,7 +323,7 @@ ISR(TIMER1_COMPA_vect)
     STEP_PORT = (STEP_PORT & ~STEP_MASK) | st.step_outbits;
     #ifdef ECHO_STEP_DIRECTION_ON_COOLANT
       ECHO_STEP_PORT = (ECHO_STEP_PORT & ~ECHO_STEP_MASK) | 
-                       (((st.step_outbits & X_STEP_BIT) != 0U) << ECHO_STEP_PIN);
+                       (((st.step_outbits & (1<<X_STEP_BIT)) != 0U) << ECHO_STEP_PIN);
     #endif
   #endif
 
@@ -474,7 +474,7 @@ ISR(TIMER0_OVF_vect)
     STEP_PORT = st.step_bits; // Begin step pulse.
     #ifdef ECHO_STEP_DIRECTION_ON_COOLANT
       ECHO_STEP_PORT = (ECHO_STEP_PORT & ~ECHO_STEP_MASK) | 
-                       (((st.step_outbits & X_STEP_BIT) != 0U) << ECHO_STEP_PIN);
+                       (((st.step_outbits & (1<<X_STEP_BIT)) != 0U) << ECHO_STEP_PIN);
     #endif
   }
 #endif
@@ -518,7 +518,7 @@ void st_reset()
   
   #ifdef ECHO_STEP_DIRECTION_ON_COOLANT
     ECHO_STEP_PORT = (ECHO_STEP_PORT & ~ECHO_STEP_MASK);
-    ECHO_DIRECTION_PORT = (ECHO_DIRECTION_PORT &~ECHO_DIRECTION_MASK);
+    ECHO_DIRECTION_PORT = (ECHO_DIRECTION_PORT & ~ECHO_DIRECTION_MASK);
   #endif
 }
 
